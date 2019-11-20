@@ -8,7 +8,7 @@ import sys
 import os
 import struct 
 
-print '\nBem-vindo ao servidor FTP \nEsperando conexao...\n'
+print ('\nBem-vindo ao servidor FTP \nEsperando conexao...\n')
 HOST = '127.0.0.1' #endereco ip do servidor
 PORT = 6000 #porta onde esta o servidor
 
@@ -23,4 +23,29 @@ servidor.listen(1) #suporta uma maquina
 
 connection, cliente = servidor.accept()
 
-print 'Conectado por', cliente
+print ('Conectado por', cliente)
+
+def upload():
+    print ("Recebendo ...")
+    arq = open('file_outputt.txt','wb')
+    while True:
+        dados = connection.recv(1024)
+        if not dados:
+            break
+        arq.write(dados)
+    arq.close()
+
+
+
+while True:
+    print ("\nEsperando por instrucoes...")
+    data = connection.recv(1024)
+    print ("\nRecebendo instrucoes...", data)
+
+    if data == "UPLD":
+        upload() 
+    elif data[:4].upper() == "QUIT":
+        quit()
+        break
+    else:
+        print ("Comando nao reconhecido")
