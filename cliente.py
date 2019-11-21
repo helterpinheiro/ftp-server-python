@@ -11,7 +11,7 @@ import struct
 
 
 HOST =  '127.0.0.1' #endereco ip do servidor
-PORT = 6000 #porta onde esta o servidor
+PORT = 6005 #porta onde esta o servidor
 '''
 socket.AF_INET = socket ip
 socket.SOCK_STREAM = tipo TCP
@@ -44,15 +44,18 @@ def upload(nome_arquivo):
     msg = "UPLD"
     cliente.send(msg.encode("utf-8"))
     arq = open(nome_arquivo,'rb')
-    
+
+    cliente.send("h",sys.getsizeof(arq))
+
     try:
        print ("Enviando...")
        for i in arq:
            cliente.send(i)
-    
+        
     except:
         print("Erro ao enviar os arquivos...")
-
+    arq.close()
+    
 while True:
     aux = raw_input('\nEntre com um comando:\n')
     if aux[:3].upper() == "CON":
