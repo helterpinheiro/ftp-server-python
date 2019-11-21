@@ -11,7 +11,7 @@ import struct
 
 
 HOST =  '127.0.0.1' #endereco ip do servidor
-PORT = 6005 #porta onde esta o servidor
+PORT = 6009 #porta onde esta o servidor
 '''
 socket.AF_INET = socket ip
 socket.SOCK_STREAM = tipo TCP
@@ -45,7 +45,7 @@ def upload(nome_arquivo):
     cliente.send(msg.encode("utf-8"))
     arq = open(nome_arquivo,'rb')
 
-    cliente.send("h",sys.getsizeof(arq))
+    cliente.send(struct.pack("h",sys.getsizeof(arq)))
 
     try:
        print ("Enviando...")
