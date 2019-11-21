@@ -46,17 +46,15 @@ def upload(nome_arquivo):
     arq = open(nome_arquivo,'rb')
     
     try:
-        l = arq.read(1024)
-        print ("Enviando...")
-        while l:
-            cliente.send(l)
-            l = contet.read(1024)
-        arq.close()
+       print ("Enviando...")
+       for i in arq:
+           cliente.send(i)
+    
     except:
         print("Erro ao enviar os arquivos...")
 
 while True:
-    aux = input('\nEntre com um comando:\n')
+    aux = raw_input('\nEntre com um comando:\n')
     if aux[:3].upper() == "CON":
         connection()
     elif aux[:4].upper() == "UPLD":

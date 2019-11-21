@@ -28,12 +28,15 @@ print ('Conectado por', cliente)
 def upload():
     print ("Recebendo ...")
     arq = open('file_outputt.txt','wb')
-    while True:
+    while 1:
+        
         dados = connection.recv(1024)
+        arq.write(dados)
         if not dados:
             break
-        arq.write(dados)
+    print('Saindo...')
     arq.close()
+    connection.close()
 
 
 
