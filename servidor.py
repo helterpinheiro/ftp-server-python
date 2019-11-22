@@ -10,7 +10,7 @@ import struct
 
 print ('\nBem-vindo ao   servidor FTP \nEsperando conexao...\n')
 HOST = '127.0.0.1' #endereco ip do servidor
-PORT = 6009 #porta onde esta o servidor
+PORT = 6011 #porta onde esta o servidor
 
 '''
 socket.AF_INET = socket ip
@@ -32,6 +32,11 @@ def upload():
     print ('Tamanho do arquivo enviado...',size_arq)
     arq = open(file,'wb')
     recebidos = 0
+    aux = 20
+    '''
+    Enquanto o numero de bytes recebidos for menor que o 
+    tamanho do arquivo, ele vai continuar enviando
+    '''
     while recebidos < size_arq:
         dados = connection.recv(1024)
         arq.write(dados)
@@ -44,6 +49,7 @@ def upload():
 while True:
     print ("\nEsperando por instrucoes...")
     data = connection.recv(1024)
+    data.decode("utf-8").strip()
     print ("\nRecebendo instrucoes...", data)
 
     if data == "UPLD":
