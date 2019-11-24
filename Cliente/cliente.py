@@ -22,7 +22,7 @@ print ('\nBem-vindo ao FTP Cliente')
 print ('\n** LISTA DE COMANDOS DO CLIENTE **\n\n')
 print ('CON - Iniciar conexao\n')
 print ('UPLD - Upload\n')
-print ('DWL - Download\n')
+print ('DWLD - Download\n')
 
 
 
@@ -40,13 +40,17 @@ def connection():
 #funcao upload do cliente
 def upload(nome_arquivo):
     
-    print ("Abrindo arquivo...")
+    print ("Upload do Arquivo...")
     msg = "UPLD"
     cliente.send(msg.encode("utf-8").strip())
     arq = open(nome_arquivo,'rb')
-
+    print ("Abrindo Arquivo...")
     cliente.send(struct.pack("h",sys.getsizeof(arq)))
-
+    '''
+    o cliente esta enviando o nome do arquivo para que se possa
+    criar um arquivo com o nome igual na pasta do servidor
+    '''
+    cliente.send(nome_arquivo)
     try:
        print ("Enviando...")
        for i in arq:
@@ -55,13 +59,42 @@ def upload(nome_arquivo):
     except:
         print("Erro ao enviar os arquivos...")
     arq.close()
+
+def download(nome_arquivo):
+    print "Download arquivo...{}".format(nome_arquivo)
+    msg = "DWLD"
+    try:
+        cliente.send(msg.encode("utf-8").strip())
+        print("Enviando requisicao...")
+    except:
+        print "Erro ao enviar requisicao..."
     
+    arq = open(nome_arquivo,'wb')
+    cliente.send(nome_arquivo)
+    size_arq = struct.unpack("h",cliente.recv(2))[0]
+    print("tamanho do aqruivo...{}".format(size_arq))
+    recebidos = 0
+    try:
+        while recebidos < size_arq:
+            dados = cliente.recv(1024)
+            arq.write(dados)
+            recebidos += 1024
+        arq.close()
+        print('Saindo...')
+    except:
+        print("Erro no download...")
+
 while True:
     aux = raw_input('\nEntre com um comando:\n')
     if aux[:3].upper() == "CON":
         connection()
+    
     elif aux[:4].upper() == "UPLD":
         upload(aux[5:])
+    
+    elif aux[:4].upper() == "DWLD":
+        download(aux[5:])
+    
     elif aux[:4].upper() == "QUIT":
         quit()
         break
