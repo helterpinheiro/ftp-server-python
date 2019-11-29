@@ -11,7 +11,7 @@ import struct
 
 
 HOST =  '127.0.0.1' #endereco ip do servidor
-PORT = 6011#porta onde esta o servidor
+PORT = 6013#porta onde esta o servidor
 '''
 socket.AF_INET = socket ip
 socket.SOCK_STREAM = tipo TCP
@@ -19,7 +19,7 @@ socket.SOCK_STREAM = tipo TCP
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 print ('\nBem-vindo ao FTP Cliente')
-print ('\n** LISTA DE COMANDOS DO CLIENTE **\n\n')
+print ('\n** LISTA DE COMANDOS DO CLIENTE **\n')
 print ('CON - Iniciar conexao\n')
 print ('UPLD - Upload\n')
 print ('DWLD - Download\n')
@@ -84,6 +84,26 @@ def download(nome_arquivo):
     except:
         print("Erro no download...")
 
+def _list():
+    print('Listando diretorios...')
+    msg = "LIST"
+    try:
+        cliente.send(msg.encode("utf-8").strip())
+        print("Enviando requisicao...")
+    except:
+        print "Erro ao enviar requisicao..."
+    
+    len_dir = struct.unpack("h", cliente.recv(2))[0]
+    print('Tamanho do diretorio...{}'.format(len_dir))
+    print ('Arquivos:')
+    recebido = 0
+    while recebido < int(len_dir):
+        buffer = struct.unpack("i",cliente.recv(4))[0]
+        arch = cliente.recv(buffer)
+        print("\t{}".format(arch))
+        cliente.send("ok")
+        recebido = recebido + 1
+
 while True:
     aux = raw_input('\nEntre com um comando:\n')
     if aux[:3].upper() == "CON":
@@ -94,6 +114,9 @@ while True:
     
     elif aux[:4].upper() == "DWLD":
         download(aux[5:])
+    
+    elif aux[:4].upper() == "LIST":
+        _list()
     
     elif aux[:4].upper() == "QUIT":
         quit()

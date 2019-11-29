@@ -10,7 +10,7 @@ import struct
 
 print ('\nBem-vindo ao   servidor FTP \nEsperando conexao...\n')
 HOST = '127.0.0.1' #endereco ip do servidor
-PORT = 6011 #porta onde esta o servidor
+PORT = 6013 #porta onde esta o servidor
 
 '''
 socket.AF_INET = socket ip
@@ -65,6 +65,19 @@ def download():
         print ("Erro ao enviar os arquivos...")
     arq.close()
 
+def _list():
+    print ('Listando...')
+    #listdir retorna uma lista com os arquivos do diretorio atual
+    #getcwd retorna o diretorio atual
+    lista = os.listdir(os.getcwd())
+    connection.send(struct.pack("h",len(lista)))
+    for i in lista:
+        connection.send(struct.pack("i",sys.getsizeof(i)))
+        connection.send(i)
+        connection.recv(1024)
+    print ('Diretorio enviado com sucesso!')
+    
+
 def quit():
     connection.close()
     servidor.close()
@@ -74,10 +87,12 @@ def quit():
 
 while True:
     print ("\nEsperando por instrucoes...")
+    '''
     aux = raw_input()
     if aux[:4].upper() == "QUIT":
         quit()
         break
+    '''
     data = connection.recv(1024)
     data.decode("utf-8").strip()
     print ("\nRecebendo instrucoes...", data)
@@ -86,6 +101,8 @@ while True:
         upload() 
     elif data == "DWLD":
         download()
+    elif data == "LIST":
+        _list()
     elif data[:4].upper() == "QUIT":
         quit()
         break
