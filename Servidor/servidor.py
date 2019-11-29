@@ -10,7 +10,7 @@ import struct
 
 print ('\nBem-vindo ao   servidor FTP \nEsperando conexao...\n')
 HOST = '127.0.0.1' #endereco ip do servidor
-PORT = 6013 #porta onde esta o servidor
+PORT = 6010 #porta onde esta o servidor
 
 '''
 socket.AF_INET = socket ip
@@ -32,17 +32,21 @@ def upload():
     print ('Tamanho do arquivo enviado...',size_arq)
     #recebendo o nome do arquivo
     file_name = connection.recv(1024)
+    
     #criando um arqivo com o mesmo nome do arquivo de upload
-    arq = open(file_name,'wb')
+    arq = open('/home/helter/Desktop/Cherno/FTP-SERVER/Servidor/Arquivos/{}'.format(file_name),'wb')
     recebidos = 0
     '''
     Enquanto o numero de bytes recebidos for menor que o 
     tamanho do arquivo, ele vai continuar enviando
     '''
+    connection.send("1")
     while recebidos < size_arq:
+        print("estou aqui")
         dados = connection.recv(1024)
         arq.write(dados)
         recebidos += 1024
+        print("e agora aqui")
     arq.close()
     print('Saindo...')
 
@@ -52,7 +56,7 @@ def download():
     print(file_name)
     try:
         print("Abrindo arquivo...")
-        arq = open(file_name,'rb')
+        arq = open('/home/helter/Desktop/Cherno/FTP-SERVER/Servidor/Arquivos/{}'.format(file_name),'rb')
     except:
         print("Erro ao abrir o arquivo")
     #size_arq = ("h",sys.getsizeof(arq))
@@ -94,16 +98,15 @@ while True:
         break
     '''
     data = connection.recv(1024)
-    data.decode("utf-8").strip()
+    data.decode("utf-8")
     print ("\nRecebendo instrucoes...", data)
-
     if data == "UPLD":
         upload() 
     elif data == "DWLD":
         download()
     elif data == "LIST":
         _list()
-    elif data[:4].upper() == "QUIT":
+    elif data == "QUIT":
         quit()
         break
     else:

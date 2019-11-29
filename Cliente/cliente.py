@@ -11,7 +11,7 @@ import struct
 
 
 HOST =  '127.0.0.1' #endereco ip do servidor
-PORT = 6013#porta onde esta o servidor
+PORT = 6010#porta onde esta o servidor
 '''
 socket.AF_INET = socket ip
 socket.SOCK_STREAM = tipo TCP
@@ -42,7 +42,11 @@ def upload(nome_arquivo):
     
     print ("Upload do Arquivo...")
     msg = "UPLD"
-    cliente.send(msg.encode("utf-8").strip())
+    try:
+        cliente.send(msg.encode("utf-8"))
+        print ("Enviando requisicao...")
+    except:
+        print ("Erro ao enviar requisicao...")
     arq = open(nome_arquivo,'rb')
     print ("Abrindo Arquivo...")
     cliente.send(struct.pack("h",sys.getsizeof(arq)))
@@ -51,11 +55,11 @@ def upload(nome_arquivo):
     criar um arquivo com o nome igual na pasta do servidor
     '''
     cliente.send(nome_arquivo)
+    cliente.recv(1024)
     try:
        print ("Enviando...")
        for i in arq:
-           cliente.send(i)
-        
+        cliente.send(i)   
     except:
         print("Erro ao enviar os arquivos...")
     arq.close()
@@ -64,7 +68,7 @@ def download(nome_arquivo):
     print "Download arquivo...{}".format(nome_arquivo)
     msg = "DWLD"
     try:
-        cliente.send(msg.encode("utf-8").strip())
+        cliente.send(msg.encode("utf-8"))
         print("Enviando requisicao...")
     except:
         print "Erro ao enviar requisicao..."
