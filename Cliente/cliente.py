@@ -23,6 +23,7 @@ print ('\n** LISTA DE COMANDOS DO CLIENTE **\n')
 print ('CON - Iniciar conexao\n')
 print ('UPLD - Upload\n')
 print ('DWLD - Download\n')
+print ('LIST - Listar diretorio\n')
 
 
 
@@ -92,7 +93,7 @@ def _list():
     print('Listando diretorios...')
     msg = "LIST"
     try:
-        cliente.send(msg.encode("utf-8").strip())
+        cliente.send(msg.encode("utf-8"))
         print("Enviando requisicao...")
     except:
         print "Erro ao enviar requisicao..."
@@ -108,6 +109,31 @@ def _list():
         cliente.send("ok")
         recebido = recebido + 1
 
+def _cd(diretorio):
+    msg = "CD"
+    try:
+        cliente.send(msg.encode("utf-8"))
+    except:
+        print('Erro de comando...')
+    cliente.recv(1024)
+    try:
+        cliente.send(diretorio)
+    except:
+        print ('Nao foi possivel acessar o diretorio')
+
+def cd():
+    msg = "CD.."
+    try:
+        cliente.send(msg.encode("utf-8"))
+    except:
+        print('Erro de comando...')
+    cliente.recv(1024)
+    try:
+        cliente.send("ok")
+    except:
+        print 'Erro na requisicao ok'
+
+
 while True:
     aux = raw_input('\nEntre com um comando:\n')
     if aux[:3].upper() == "CON":
@@ -121,6 +147,12 @@ while True:
     
     elif aux[:4].upper() == "LIST":
         _list()
+    
+    elif aux[:2].upper() == "CD":
+        _cd(aux[3:])
+    
+    elif aux[:4].upper() == "CD..":
+        cd()
     
     elif aux[:4].upper() == "QUIT":
         quit()

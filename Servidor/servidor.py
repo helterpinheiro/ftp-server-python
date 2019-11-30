@@ -80,7 +80,26 @@ def _list():
         connection.send(i)
         connection.recv(1024)
     print ('Diretorio enviado com sucesso!')
-    
+
+def _cd():
+    connection.send("1")
+    my_folder = connection.recv(1024)
+    print 'diretorio...{}'.format(my_folder)
+    try:
+        os.chdir(my_folder)
+        print(os.getcwd())
+    except:
+        print('Diretorio nao reconhecido...')
+
+def cd():
+    connection.send("1")
+    my_folder = os.getcwd()
+    connection.recv(1024)
+    try:
+        alo = os.path.normpath(os.getcwd() + os.sep + os.pardir)
+        print alo
+    except:
+        print 'Erro na mudanca de diretorio'
 
 def quit():
     connection.close()
@@ -106,6 +125,10 @@ while True:
         download()
     elif data == "LIST":
         _list()
+    elif data == "CD":
+        _cd()
+    elif data == "CD..":
+        cd()
     elif data == "QUIT":
         quit()
         break
