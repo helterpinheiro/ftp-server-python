@@ -30,7 +30,7 @@ def upload():
     #recebe o tamanho do arquivo em bytes
     size_arq = struct.unpack("h",connection.recv(2))[0]
     print ('Tamanho do arquivo enviado...',size_arq)
-    #recebendo o nome do arquivo
+    #recebendo o arquivo
     file_name = connection.recv(1024)
     
     #criando um arqivo com o mesmo nome do arquivo de upload
@@ -41,6 +41,8 @@ def upload():
     tamanho do arquivo, ele vai continuar enviando
     '''
     connection.send("1")
+    #enquanto o recebidos for menor que o tamanho do arquivo
+    #ele vai continuar recebendo o arquivo
     while recebidos < size_arq:
         print("estou aqui")
         dados = connection.recv(1024)
@@ -52,16 +54,18 @@ def upload():
 
 def download():
     print ("Enviando arquivo...")
+    #recebe o nome do arquivo
     file_name = connection.recv(1024)
     print(file_name)
     try:
+        #abre o arquivo pra leitura
         print("Abrindo arquivo...")
         arq = open('/home/helter/Desktop/Cherno/FTP-SERVER/Servidor/Arquivos/{}'.format(file_name),'rb')
     except:
         print("Erro ao abrir o arquivo")
-    #size_arq = ("h",sys.getsizeof(arq))
+    #Envia o tamanho do arquivo pro cliente
     connection.send(struct.pack("h",sys.getsizeof(arq)))
-
+    #enviando o arquivo
     try:
         for i in arq:
             connection.send(i)
@@ -74,7 +78,14 @@ def _list():
     #listdir retorna uma lista com os arquivos do diretorio atual
     #getcwd retorna o diretorio atual
     lista = os.listdir(os.getcwd())
+    #enviando o tamanho do diretorio 
     connection.send(struct.pack("h",len(lista)))
+    #percorre a lista enviando o diretorio pro cliente
+    '''
+    Primeiro se envia o tamanho do arquivo que ta na lista
+    depois se envia o arquivo
+    logo apos se recebe um ok sinalizando que o envio ocorreu bem
+    '''
     for i in lista:
         connection.send(struct.pack("i",sys.getsizeof(i)))
         connection.send(i)
@@ -82,24 +93,17 @@ def _list():
     print ('Diretorio enviado com sucesso!')
 
 def _cd():
+    #enviando uma requisicao afirmando que a funcao esta ativa
     connection.send("1")
     my_folder = connection.recv(1024)
     print 'diretorio...{}'.format(my_folder)
+    #os.chdir faz a mudanca de diretorio
     try:
         os.chdir(my_folder)
         print(os.getcwd())
     except:
         print('Diretorio nao reconhecido...')
 
-def cd():
-    connection.send("1")
-    my_folder = os.getcwd()
-    connection.recv(1024)
-    try:
-        alo = os.path.normpath(os.getcwd() + os.sep + os.pardir)
-        print alo
-    except:
-        print 'Erro na mudanca de diretorio'
 
 def quit():
     connection.close()
@@ -107,16 +111,12 @@ def quit():
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-
+#laco infinito que espera sempre as requisicoes
 while True:
     print ("\nEsperando por instrucoes...")
-    '''
-    aux = raw_input()
-    if aux[:4].upper() == "QUIT":
-        quit()
-        break
-    '''
+    #recebe as requisicoes das funcoes do cliente
     data = connection.recv(1024)
+    #recebe e decodifica de utf-8
     data.decode("utf-8")
     print ("\nRecebendo instrucoes...", data)
     if data == "UPLD":
