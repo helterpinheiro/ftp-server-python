@@ -17,7 +17,6 @@ socket.AF_INET = socket ip
 socket.SOCK_STREAM = tipo TCP
 '''
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 #menu inicial do cliente
 print ('\nBem-vindo ao FTP Cliente')
 print ('\n** LISTA DE COMANDOS DO CLIENTE **\n')
