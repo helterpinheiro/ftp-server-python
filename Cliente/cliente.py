@@ -1,5 +1,5 @@
 '''
-Devs: Helter Pinheiro, Julio Cesar, Gustavo Roberth
+Devs: Helter Pinheiro
 cliente simples FTP
 inicio: 15/11/2019
 '''
